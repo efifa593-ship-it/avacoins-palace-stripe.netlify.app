@@ -1,148 +1,299 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Avacoins Palace - 20K</title>
-  <script src="https://js.stripe.com/v3/"></script>
-  <style>
-    :root{--bg:#020617;--card:#0f172a;--text:#e5e7eb;--green:#22c55e;--gray:#94a3b8}
-    *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
-    body{background:var(--bg);color:var(--text);padding:16px;min-height:100vh}
-    .container{max-width:1200px;margin:0 auto}
-    header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:24px}
-    .logo{display:flex;align-items:center;gap:12px}
-    .logo img{width:56px;height:56px;border-radius:50%;border:2px solid white;object-fit:cover}
-    .logo h1{font-size:1.5rem;color:white}
-    .logo p{font-size:0.9rem;color:var(--gray)}
-    .btn-top{background:#1f2937;color:white;padding:10px 16px;border-radius:999px;border:none;cursor:pointer;font-weight:600}
-
-    .layout{display:grid;grid-template-columns:1fr 340px;gap:20px}
-    @media(max-width:860px){.layout{grid-template-columns:1fr}}
-
-    .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-    .tag{background:var(--green);color:#052e16;padding:6px 12px;border-radius:999px;font-size:0.8rem;font-weight:700;display:inline-block}
-    .price{font-size:2rem;font-weight:800;color:var(--green);margin:16px 0}
-    .field{display:flex;align-items:center;gap:12px;margin:16px 0;flex-wrap:wrap}
-    .field input{width:100px;padding:10px;background:#020617;border:1px solid #4b5563;color:white;text-align:center;border-radius:999px}
-    .btn-buy{width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;padding:16px;font-size:1.2rem;border:none;border-radius:999px;box-shadow:0 10px 30px rgba(34,197,94,0.4);cursor:pointer;transition:0.2s}
-    .btn-buy:hover{transform:translateY(-3px)}
-
-    #carrinho{position:sticky;top:16px}
-    .resumo{margin:16px 0;font-size:1.1rem;line-height:1.6}
-
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
-    .modal-box{background:var(--card);border-radius:16px;padding:24px;max-width:500px;width:100%;border:1px solid #1f2937}
-    .close{float:right;background:none;color:var(--gray);font-size:2rem;border:none;cursor:pointer}
-    code{background:#1e293b;padding:4px 8px;border-radius:6px;font-size:0.9rem}
-    .hint{font-size:0.85rem;color:var(--gray);margin-top:12px}
-    #loading{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:200;justify-content:center;align-items:center}
-    .spinner{width:50px;height:50px;border:5px solid #f3f3f3;border-top:5px solid var(--green);border-radius:50%;animation:spin 1s linear infinite}
-    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Gallery</title>
+<meta name="theme-color" content="#000">
+<style>
+  :root {
+    --bg: #000;
+    --glass: rgba(20,20,30,0.6);
+    --accent: #a855f7;
+    --purple: #c084fc;
+    --text: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #1a0033, #4c1d95);
+    padding: 20px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top, #a855f780, transparent 70%);
+    opacity: 0.4;
+  }
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+  }
+  .profile-img {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3.5px solid #fff;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+  }
+  .title {
+    font-size: 31px;
+    font-weight: 900;
+    letter-spacing: -1px;
+  }
+  .counter {
+    position: fixed;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass);
+    color: var(--purple);
+    padding: 10px 26px;
+    border-radius: 22px;
+    font-weight: 700;
+    font-size: 16px;
+    backdrop-filter: blur(16px);
+    border: 1px solid #333;
+    z-index: 99;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 16px;
+    padding: 24px;
+    padding-bottom: 120px;
+  }
+  .card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #0a0a0a;
+    box-shadow: 0 12px 40px rgba(0,0,0.8);
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .card:hover {
+    transform: scale(1.04) translateY(-8px);
+    box-shadow: 0 20px 60px rgba(168, 85, 247, 0.4);
+  }
+  .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .actions {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 18px;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  .card:hover .actions { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+  .btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    transition: all 0.2s;
+  }
+  .btn:active { transform: scale(0.9); }
+  .fab {
+    position: fixed;
+    left: 24px;
+    bottom: 28px;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--accent), #e879f9);
+    color: white;
+    border: none;
+    border-radius: 22px;
+    font-size: 32px;
+    font-weight: bold;
+    box-shadow: 0 12px 40px rgba(168,85,247,0.6);
+    z-index: 1000;
+  }
+  .empty {
+    text-align: center;
+    padding: 140px 30px 60px;
+    color: #888;
+  }
+  .empty div { font-size: 100px; margin: 30px 0; opacity: 0.7; }
+  .empty h2 { font-size: 32px; font-weight: 800; margin: 20px 0; }
+  .empty p { font-size: 18px; opacity: 0.8; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">
-        <img src="https://d1fdloi71mui9q.cloudfront.net/b8SgVwrISpOiRT4p17SR_pOF6nXTm7emQbiqJ" alt="Avacoins Palace">
-        <div>
-          <h1>Avacoins Palace</h1>
-          <p>20.000 Avacoins • Entrega imediata</p>
-        </div>
-      </div>
-      <button class="btn-top" onclick="abrirPedidos()">Meus pedidos</button>
-    </header>
 
-    <div class="layout">
-      <main>
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <h2>Conta 20.000 Avacoins</h2>
-            <span class="tag">PRONTA ENTREGA</span>
-          </div>
-          <p>Cada conta tem exatamente <strong>20.000 Avacoins</strong> prontos para usar.</p>
-          <div class="price">R$ 6,00 por conta</div>
+<header>
+  <div class="header-content">
+    <!-- AQUI ESTÁ O NOVO GATINHO QUE VOCÊ ESCOLHEU -->
+    <img src="https://th.bing.com/th/id/R.47d9ac57f12f64dcf7a1f3acc2a1a5fa?rik=DSQjoOC98As6vg&riu=http://meusanimais.com.br/wp-content/uploads/2015/06/gato.jpg&ehk=OHLZ4iRGXJOrOdI+Jj+D3j8BJDcEgZRK/6R1pE2nqjA=&risl=&pid=ImgRaw&r=0" alt="Gatinho" class="profile-img">
+    <div class="title">INGRID SANTOS</div>
+  </div>
+</header>
 
-          <div class="field">
-            <span>Quantidade:</span>
-            <input type="number" id="qtd" min="1" value="1" onchange="calc()">
-            <strong>Estoque: <span id="estoque">1</span></strong>
-          </div>
+<div class="counter" id="c">0 itens</div>
 
-          <button class="btn-buy" onclick="pagar()">Pagar com PIX • Cartão • Boleto</button>
-          <p class="hint">Pagamento 100% seguro via Stripe • Entrega automática</p>
-        </div>
-      </main>
+<div class="empty" id="empty">
+  <div>Photo</div>
+  <h2>Sua galeria privada</h2>
+  <p>Toque na tela para começar</p>
+</div>
 
-      <aside id="carrinho" class="card">
-        <h3>Resumo do pedido</h3>
-        <div class="resumo" id="resumo">Selecione a quantidade</div>
-      </aside>
+<div class="grid" id="grid"></div>
+<button class="fab" id="all" title="Baixar tudo">Download</button>
+
+<script>
+// Vision Gallery 2025 — com o novo gatinho
+const grid = document.getElementById('grid');
+const empty = document.getElementById('empty');
+const counter = document.getElementById('c');
+let db;
+
+const dbReq = indexedDB.open("VisionGallery2025", 3);
+dbReq.onupgradeneeded = e => e.target.result.createObjectStore("m", {keyPath:"id", autoIncrement:true});
+dbReq.onsuccess = e => { db = e.target.result; load(); };
+
+// Thumbnail para vídeo
+function getThumb(file, cb) {
+  const v = document.createElement('video');
+  v.muted = true; v.preload = "metadata";
+  v.src = URL.createObjectURL(file);
+  v.onloadeddata = () => v.currentTime = 0.1;
+  v.onseeked = () => {
+    const c = document.createElement('canvas');
+    c.width = 400; c.height = 400;
+    c.getContext('2d').drawImage(v, 0, 0, 400, 400);
+    c.toBlob(b => { cb(URL.createObjectURL(b)); URL.revokeObjectURL(v.src); }, 'image/webp', 0.9);
+  };
+}
+
+// Salvar
+function save(file) {
+  const r = new FileReader();
+  r.onload = e => {
+    const video = file.type.startsWith('video/');
+    if (video) {
+      getThumb(file, thumb => addToDB(e.target.result, thumb, file));
+    } else {
+      addToDB(e.target.result, e.target.result, file);
+    }
+  };
+  r.readAsDataURL(file);
+}
+
+function addToDB(data, thumb, file) {
+  const tx = db.transaction("m","readwrite");
+  tx.objectStore("m").add({
+    n: file.name || (file.type.startsWith('video/')?"video.mp4":"foto.jpg"),
+    d: data,
+    t: thumb,
+    v: file.type.startsWith('video/'),
+    s: file.size,
+    dt: Date.now()
+  });
+  tx.oncomplete = updateCount;
+}
+
+// Criar card
+function card(item) {
+  const c = document.createElement('div'); c.className="card";
+  c.innerHTML = item.v 
+    ? `<img src="${item.t}"><div class="video-badge">Play</div>`
+    : `<img src="${item.d}">`;
+
+  c.innerHTML += `
+    <div class="actions">
+      <button class="btn" title="Baixar">Download</button>
+      <button class="btn" title="Apagar">Delete</button>
     </div>
-  </div>
+  `;
 
-  <!-- Loading -->
-  <div id="loading">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Modal Meus Pedidos -->
-  <div id="modal" class="modal">
-    <div class="modal-box">
-      <button class="close" onclick="fechar()">×</button>
-      <h3>Minhas Contas Liberadas</h3>
-      <div id="lista" style="margin-top:16px;"></div>
-    </div>
-  </div>
-
-  <script>
-    // Stripe com suas chaves LIVE
-    const stripe = Stripe('pk_live_51SaMyoL0CPL2nGCEq5b5YXzDzJ9qgE0rlx2gw4nJYuV7rAAzbhFwNkdGXC9mWhmcN2xiWm4bM2NFumtcyMkUIjmU00JAYTN3Zn');
-
-    // Suas contas reais (adicione mais no painel depois)
-    let contas = ['ph.a.n.don.g.nhi19.58.5@gmail.com:tiagoSILVA123@'];
-    document.getElementById("estoque").textContent = contas.length;
-
-    function calc() {
-      const q = parseInt(document.getElementById("qtd").value) || 1;
-      const total = q * 6;
-      document.getElementById("resumo").innerHTML = 
-        `<strong>${q} × Conta 20.000 Avacoins</strong><br>Total: R$ ${total.toFixed(2)}`;
+  c.querySelector('.btn').onclick = ev => { ev.stopPropagation(); download(item.d, item.n); };
+  c.querySelector('.btn:last-child').onclick = ev => {
+    if(confirm("Apagar para sempre?")) {
+      db.transaction("m","readwrite").objectStore("m").delete(item.id);
+      c.style.transition="0.5s"; c.style.transform="scale(0)"; c.style.opacity="0";
+      setTimeout(()=>c.remove(),500); updateCount();
     }
-    calc();
+  };
 
-    async function pagar() {
-      const qtd = parseInt(document.getElementById("qtd").value) || 1;
-      if (qtd > contas.length) return alert(`Só temos ${contas.length} conta(s) no estoque!`);
+  let t; c.ontouchstart=()=>t=setTimeout(()=>c.querySelector('.btn:last-child').click(),800);
+  c.ontouchend=c.ontouchmove=()=>clearTimeout(t);
 
-      document.getElementById("loading").style.display = "flex";
+  grid.prepend(c);
+}
 
-      try {
-        // Cria sessão no Stripe (back-end necessário - use o PHP abaixo)
-        const response = await fetch('/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: qtd })
-        });
-        const { id } = await response.json();
-        stripe.redirectToCheckout({ sessionId: id });
-      } catch (error) {
-        alert('Erro no pagamento. Tente novamente.');
-        document.getElementById("loading").style.display = "none";
-      }
-    }
+// Carregar
+function load() {
+  db.transaction("m").objectStore("m").getAll().onsuccess = e => {
+    const l = e.target.result.sort((a,b)=>b.dt - a.dt);
+    updateCount(l.length);
+    l.length ? empty.style.display="none" : empty.style.display="block";
+    l.forEach(card);
+  };
+}
 
-    function abrirPedidos() {
-      // Lógica igual ao anterior (localStorage)
-      const lista = document.getElementById("lista");
-      // ... (código do modal igual ao anterior)
-      document.getElementById("modal").style.display = "flex";
-    }
+function updateCount() {
+  db.transaction("m").objectStore("m").count().onsuccess=e=>counter.textContent=e.target.result+" itens";
+}
 
-    function fechar() {
-      document.getElementById("modal").style.display = "none";
-    }
-  </script>
+function download(src,name){const a=document.createElement("a");a.href=src;a.download=name;a.click();}
+
+// Adicionar mídia
+document.body.onclick=e=>{
+  if(e.target.closest('.card')||e.target.id==="all")return;
+  const i=document.createElement("input");
+  i.type="file";i.accept="image/*,video/*";i.multiple=true;
+  i.onchange=()=>Array.from(i.files).forEach(save);
+  i.click();
+};
+
+// Baixar tudo
+document.getElementById("all").onclick=()=>{
+  db.transaction("m").objectStore("m").getAll().onsuccess=e=>{
+    const l=e.target.result;
+    if(!l.length)return alert("Nada salvo");
+    l.forEach((i,x)=>setTimeout(()=>download(i.d,i.n),x*80));
+    alert(l.length+" arquivos baixados");
+  };
+};
+</script>
 </body>
 </html>
